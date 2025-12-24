@@ -1,14 +1,38 @@
 #include "GameState.h"
 
-GameState::GameState(sf::RenderWindow* window)
-	: State(window)
+void GameState::initKeybinds()
 {
+	std::ifstream ifs("Config/gamestate_keybinds.ini");
 
+	if (ifs.is_open())
+	{
+		std::string key = "";
+		std::string key2 = "";
+
+		while (ifs >> key >> key2)
+		{
+			this->keybinds[key] = static_cast<int>(this->supportedKeys->at(key2));
+		}
+	}
+
+	ifs.close();
+
+	this->keybinds["CLOSE"] = this->supportedKeys->at("Escape");
+	this->keybinds["MOVE_LEFT"] = this->supportedKeys->at("A");
+	this->keybinds["MOVE_RIGHT"] = this->supportedKeys->at("D");
+	this->keybinds["MOVE_UP"] = this->supportedKeys->at("W");
+	this->keybinds["MOVE_DOWN"] = this->supportedKeys->at("S");
+}
+
+GameState::GameState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states)
+	: State(window, supportedKeys, states)
+{
+	this->initKeybinds();
 }
 
 GameState::~GameState()
 {
-
+	
 }
 
 void GameState::endState()
@@ -16,20 +40,33 @@ void GameState::endState()
 	std::cout << "Ending GameState.\n";
 }
 
-void GameState::updateKeybinds(const float& dt)
+void GameState::updateInput(const float& dt)
 {
 	this->checkForQuit();
+
+	// Update player input
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_LEFT"))))
+		this->player.move(dt, -1.0f, 0.0f);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_RIGHT"))))
+		this->player.move(dt, 1.0f, 0.0f);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_UP"))))
+		this->player.move(dt, 0.0f, -1.0f);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_DOWN"))))
+		this->player.move(dt, 0.0f, 1.0f);
 }
 
 void GameState::update(const float& dt)
 {
-	this->updateKeybinds(dt);
+	this->updateMousePositions();
+	this->updateInput(dt);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-		std::cout << "A\n";
+	this->player.update(dt);
 }
 
 void GameState::render(sf::RenderTarget* target)
 {
+	if (!target)
+		target = this->window;
 
+	this->player.render(target);
 }
