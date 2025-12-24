@@ -1,7 +1,0 @@
-<Solution>
-  <Configurations>
-    <Platform Name="x64" />
-    <Platform Name="x86" />
-  </Configurations>
-  <Project Path="ProjectNova/ProjectNova.vcxproj" Id="f3628340-1353-4703-aa22-cd25af3e7f52" />
-</Solution>
