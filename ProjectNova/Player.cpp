@@ -1,27 +1,29 @@
 #include "Player.h"
 
-// Initializer Functions
 void Player::initVariables()
 {
+    // Initialize specific player logic here
 }
 
 void Player::initComponents()
 {
-	this->createMovementComponent(250.0f, 10.0f, 4.0f);
+    // Attach physics: MaxSpeed: 300, Accel: 15, Decel: 5
+    this->createMovementComponent(300.0f, 15.0f, 5.0f);
 }
 
-
-// Constructors / Destructors
 Player::Player(float x, float y, sf::Texture& texture)
 {
-	this->initVariables();
-	this->initComponents();
+    this->initVariables();
 
-	this->setTexture(texture);
-	this->setPosition(x, y);
+    // 1. Setup Visuals (Allocates Sprite Memory)
+    this->setTexture(texture);
+
+    // 2. Setup Logic (Links Component to Sprite Memory)
+    this->initComponents();
+
+    this->setPosition(x, y);
 }
 
 Player::~Player()
 {
-
 }

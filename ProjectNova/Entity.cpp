@@ -2,58 +2,67 @@
 
 void Entity::initVariables()
 {
-	this->sprite = nullptr;
-	this->texture = nullptr;
-	this->movementComponent = nullptr;
+    this->texture = nullptr;
+    this->sprite = nullptr;
+    this->movementComponent = nullptr;
 }
 
 Entity::Entity()
 {
-	this->initVariables();
+    this->initVariables();
 }
 
 Entity::~Entity()
 {
-	delete this->movementComponent;
-	delete this->sprite;
+    delete this->movementComponent;
+    delete this->sprite;
 }
 
-
-// Component Functions
 void Entity::setTexture(sf::Texture& texture)
 {
-	this->texture = &texture;
-	this->sprite = new sf::Sprite(*this->texture);
-	this->sprite->setTexture(texture);
+    this->texture = &texture;
+
+    // Re-create sprite if it already exists to ensure fresh state
+    if (this->sprite) delete this->sprite;
+
+    this->sprite = new sf::Sprite(*this->texture);
 }
 
 void Entity::createMovementComponent(const float maxVelocity, const float acceleration, const float deceleration)
 {
-	this->movementComponent = new MovementComponent(this->sprite, maxVelocity, acceleration, deceleration);
+    // CRITICAL: We cannot create a movement component if we don't have a sprite to move.
+    if (this->sprite)
+    {
+        this->movementComponent = new MovementComponent(this->sprite, maxVelocity, acceleration, deceleration);
+    }
+    else
+    {
+        std::cout << "ERROR::ENTITY::createMovementComponent::SPRITE_IS_NULL" << std::endl;
+    }
 }
 
-
-// Functions
 void Entity::setPosition(const float x, const float y)
 {
-	this->sprite->setPosition({ x, y });
+    if (this->sprite)
+        this->sprite->setPosition({ x, y });
 }
 
 void Entity::move(const float dir_x, const float dir_y, const float& dt)
 {
-	if (this->movementComponent)
-	{
-		this->movementComponent->move(dir_x, dir_y, dt); // Sets velocity
-	}
+    if (this->movementComponent)
+    {
+        this->movementComponent->move(dir_x, dir_y, dt); // Sets velocity
+    }
 }
 
 void Entity::update(const float& dt)
 {
-	if (this->movementComponent)
-		this->movementComponent->update(dt);
+    if (this->movementComponent)
+        this->movementComponent->update(dt);
 }
 
 void Entity::render(sf::RenderTarget* target)
 {
-	target->draw(*this->sprite);
+    if (this->sprite)
+        target->draw(*this->sprite);
 }

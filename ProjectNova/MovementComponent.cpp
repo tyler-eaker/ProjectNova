@@ -1,10 +1,11 @@
 #include "MovementComponent.h"
 
-MovementComponent::MovementComponent(sf::Sprite* sprite, 
-	float maxVelocity, float acceleration, float deceleration)
-	: sprite(*sprite), maxVelocity(maxVelocity), acceleration(acceleration), deceleration(deceleration)
+/* --- CONSTRUCTORS/DESTRUCTORS --- */
+
+MovementComponent::MovementComponent(sf::Sprite* sprite, float maxVelocity, float acceleration, float deceleration)
+    : sprite(*sprite), maxVelocity(maxVelocity), acceleration(acceleration), deceleration(deceleration)
 {
-	this->maxVelocity = maxVelocity;
+    
 }
 
 MovementComponent::~MovementComponent()
@@ -12,50 +13,54 @@ MovementComponent::~MovementComponent()
 
 }
 
+
+
+/* --- FUNCTIONS --- */
+
 const sf::Vector2f& MovementComponent::getVelocity() const
 {
-	return this->velocity;
+    return this->velocity;
 }
 
-
-// Functions
 void MovementComponent::move(const float dir_x, const float dir_y, const float& dt)
 {
-	// Accelerating a sprite until it reaches the max velocity
-
-	// Acceleration
-	this->velocity.x += this->acceleration * dir_x;
-
-	if (this->velocity.x > 0.0f) // Check for right
-	{
-		if (this->velocity.x > this->maxVelocity)
-			this->velocity.x = this->maxVelocity;
-	}
-	else if (this->velocity.x < 0.0f) // Check for left
-	{
-		if (this->velocity.x < -this->maxVelocity)
-			this->velocity.x = -this->maxVelocity;
-	}
-
-	this->velocity.y += this->acceleration * dir_y;
+    // Apply acceleration in the requested direction
+    this->velocity.x += this->acceleration * dir_x;
+    this->velocity.y += this->acceleration * dir_y;
 }
 
 void MovementComponent::update(const float& dt)
 {
-	// Deceleration
-	if (this->velocity.x > 0.0f) // Check for right
-	{
-		this->velocity.x -= deceleration;
-		if (this->velocity.x < 0.0f)
-			this->velocity.x = 0.0f;
-	}
-	else if (this->velocity.x < 0.0f)
-	{
-		this->velocity.x += deceleration;
-		if (this->velocity.x > 0.0f)
-			this->velocity.x = 0.0f;
-	}
+    // Check if velocity is positive or negative
+    // Apply deceleration (friction) towards 0
+    // Clamp velocity to ensure it doesn't cross 0 due to friction math
 
-	// Final move
-	this->sprite.move(this->velocity * dt); // Uses velocity
+     // X-Axis Friction
+    if (this->velocity.x > 0.0f) {
+        this->velocity.x -= deceleration;
+        if (this->velocity.x < 0.0f) this->velocity.x = 0.0f;
+    }
+    else if (this->velocity.x < 0.0f) {
+        this->velocity.x += deceleration;
+        if (this->velocity.x > 0.0f) this->velocity.x = 0.0f;
+    }
+
+    // Y-Axis Friction
+    if (this->velocity.y > 0.0f) {
+        this->velocity.y -= deceleration;
+        if (this->velocity.y < 0.0f) this->velocity.y = 0.0f;
+    }
+    else if (this->velocity.y < 0.0f) {
+        this->velocity.y += deceleration;
+        if (this->velocity.y > 0.0f) this->velocity.y = 0.0f;
+    }
+
+    // Max Velocity Clamp (Speed Limit)
+    if (std::abs(this->velocity.x) > maxVelocity)
+        this->velocity.x = (this->velocity.x > 0) ? maxVelocity : -maxVelocity;
+    if (std::abs(this->velocity.y) > maxVelocity)
+        this->velocity.y = (this->velocity.y > 0) ? maxVelocity : -maxVelocity;
+
+    // Apply final movement to the sprite
+    this->sprite.move(this->velocity * dt);
 }

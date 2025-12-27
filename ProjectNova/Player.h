@@ -2,20 +2,19 @@
 
 #include "Entity.h"
 
-class Player :
-    public Entity
+/**
+ * @class Player
+ * @brief The main character controlled by the user.
+ */
+class Player : public Entity
 {
 public:
     Player(float x, float y, sf::Texture& texture);
     virtual ~Player();
 
-    // Functions
+    // Player specific logic can be added here (Health, Inventory, etc.)
 
 private:
-    // Variables
-
-    //Initializer Functions
     void initVariables();
     void initComponents();
 };
-

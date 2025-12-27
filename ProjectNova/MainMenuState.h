@@ -2,34 +2,36 @@
 
 #include "GameState.h"
 #include "Button.h"
+#include "SettingsMenuState.h"
 
-class MainMenuState :
-    public State
+class MainMenuState : public State
 {
 public:
-	MainMenuState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states);
-	virtual ~MainMenuState();
+    MainMenuState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states);
+    virtual ~MainMenuState();
 
-	// Functions
-	void updateInput(const float& dt);
-	void updateButtons();
-	void update(const float& dt);
-	void renderButtons(sf::RenderTarget* target = nullptr);
-	void render(sf::RenderTarget* target = nullptr);
+    // Override State Functions
+    void updateInput(const float& dt) override;
+    void updateButtons();
+    void update(const float& dt) override;
+    void renderButtons(sf::RenderTarget* target = nullptr);
+    void render(sf::RenderTarget* target = nullptr) override;
 
 private:
-	// Variables
-	sf::Texture backgroundTexture;
-	sf::RectangleShape background;
-	sf::Font font;
+    sf::Texture backgroundTexture;
+    sf::RectangleShape background;
 
-	std::map<std::string, Button*> buttons;
+    sf::Texture logoTexture;
+    sf::RectangleShape logo;
 
-	// Functions
-	void initVariables();
-	void initBackground();
-	void initFonts();
-	void initKeybinds();
-	void initButtons();
+    sf::Font font;
+
+    std::map<std::string, Button*> buttons;
+
+    void initVariables();
+    void initBackground();
+    void initLogo();
+    void initFonts();
+    void initKeybinds();
+    void initButtons();
 };
-

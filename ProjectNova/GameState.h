@@ -1,25 +1,22 @@
 #pragma once
 
 #include "State.h"
+#include "Player.h"
 
-class GameState :
-	public State
+class GameState : public State
 {
 public:
-	GameState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states);
-	virtual ~GameState();
+    GameState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states);
+    virtual ~GameState();
 
-	// Functions
-	void updateInput(const float& dt);
-	void update(const float& dt);
-	void render(sf::RenderTarget* target = nullptr);
+    void updateInput(const float& dt) override;
+    void update(const float& dt) override;
+    void render(sf::RenderTarget* target = nullptr) override;
 
 private:
-	Player* player;
+    Player* player;
 
-	// Functions
-	void initKeybinds();
-	void initTextures();
-	void initPlayers();
+    void initKeybinds();
+    void initTextures();
+    void initPlayers();
 };
-
